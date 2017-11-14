@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" href="/fonts/fonts.min.css" /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/css/uikit.min.css" />
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+
+    <div class="uk-container">
+      <div class="uk-flex uk-flex-center uk-margin">
+        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
+            <form>
+              <fieldset class="uk-fieldset">
+                <div class="uk-flex uk-flex-center">
+                    <input id="searchInput" class="uk-input uk-form-large" type="text">
+                    <button id="searchBtn" class="uk-button uk-button-primary">Search</button>
+                </div>
+              </fieldset>
+            </form>
+        </div>
+      </div>
+
+      <div class="uk-flex uk-flex-center uk-margin">
+        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
+            <div id="map"></div>
+            <div id="mapSpinner">
+              <div uk-spinner></div>
+              <div class="uk-text-meta">Getting your current location...</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="uk-flex uk-flex-center uk-margin">
+        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
+            <ul id="placesResultsList" class="uk-list uk-list-divider"></ul>
+        </div>
+      </div>
+    </div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBUi4ei2kP69AvGM2jYcU6jFVBhhmKW3xk&libraries=places"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit-icons.min.js"></script>
+    <script src="/js/main.js"></script>
+  </body>
+</html>
