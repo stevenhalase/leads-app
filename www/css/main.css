@@ -16,11 +16,106 @@
   #mapSpinner.show {
     display: flex; }
 
+.si-content {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+
+.place-item {
+  flex: 1;
+  flex-basis: 30%;
+  margin: 0 10px 30px;
+  display: flex;
+  flex-direction: column; }
+  .place-item .uk-card-body {
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center; }
+    .place-item .uk-card-body .place-item-marker {
+      margin-right: 15px;
+      position: relative;
+      flex: 0 0 auto; }
+      .place-item .uk-card-body .place-item-marker img {
+        width: 35px;
+        height: 50px; }
+      .place-item .uk-card-body .place-item-marker span {
+        position: absolute;
+        left: 12px;
+        top: 6px;
+        color: #FFF;
+        width: 11px; }
+    .place-item .uk-card-body .place-item-title {
+      cursor: pointer; }
+      .place-item .uk-card-body .place-item-title:hover {
+        color: #888; }
+
+#placeDetailsOverlay .uk-offcanvas-bar {
+  width: 50% !important; }
+
+#placeContactsContent .place-contact {
+  flex: 1;
+  flex-basis: 40%;
+  margin: 0 10px 30px;
+  display: flex;
+  flex-direction: column; }
+  #placeContactsContent .place-contact .uk-card-body {
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; }
+  #placeContactsContent .place-contact .uk-card-footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; }
+    #placeContactsContent .place-contact .uk-card-footer .place-contact-details-button {
+      background-color: #1e87f0 !important;
+      color: #FFF !important; }
+
+#placeContactsContent .place-contact .uk-text-bold a {
+  color: #666 !important;
+  text-decoration: none !important; }
+
+#placeContactsContent .place-contact .uk-text-meta {
+  color: #999 !important; }
+
+#placeContactsContent .place-contact .uk-badge {
+  background-color: #1e87f0 !important;
+  color: #FFF !important;
+  margin: 5px;
+  font-size: 12px; }
+
+#placeContactsContent .place-contact .uk-label {
+  background-color: #EEE !important;
+  margin: 5px;
+  font-size: 12px; }
+
+#contactDetailsOverlay .uk-offcanvas-bar {
+  width: 75% !important; }
+
+#contactDetailsOverlay .uk-offcanvas-bar a {
+  color: rgba(255, 255, 255, 0.7) !important; }
+
+#contactDetailsOverlay .uk-offcanvas-bar .uk-list-striped > li:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.009) !important; }
+
+#contactDetailsOverlay .contact-details .contact-details-images {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center; }
+  #contactDetailsOverlay .contact-details .contact-details-images .contact-details-image {
+    height: 200px;
+    flex: 1;
+    margin: 0 15px 15px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat; }
+
 body {
-  background: #232526;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #414345, #232526);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #414345, #232526);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   padding: 100px 0; }

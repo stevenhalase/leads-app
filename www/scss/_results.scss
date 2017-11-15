@@ -1,0 +1,136 @@
+.place-item {
+  flex: 1;
+  flex-basis: 30%;
+  margin: 0 10px 30px;
+
+  display: flex;
+  flex-direction: column;
+
+  .uk-card-body {
+    flex-grow: 1;
+    text-align: center;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    .place-item-marker {
+      margin-right: 15px;
+      position: relative;
+      flex: 0 0 auto;
+
+      img {
+        width: 35px;
+        height: 50px;
+      }
+
+      span {
+        position: absolute;
+        left: 12px;
+        top: 6px;
+        color: #FFF;
+        width: 11px;
+      }
+    }
+
+    .place-item-title {
+      cursor: pointer;
+
+      &:hover {
+        color: #888;
+      }
+    }
+  }
+}
+
+#placeDetailsOverlay .uk-offcanvas-bar {
+  width: 50%!important;
+}
+
+#placeContactsContent .place-contact {
+  flex: 1;
+  flex-basis: 40%;
+  margin: 0 10px 30px;
+
+  display: flex;
+  flex-direction: column;
+
+  .uk-card-body {
+    flex-grow: 1;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .uk-card-footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    .place-contact-details-button {
+      background-color: #1e87f0!important;
+      color: #FFF!important;
+    }
+  }
+}
+
+#placeContactsContent .place-contact .uk-text-bold a {
+  color: #666!important;
+  text-decoration: none!important;
+}
+
+#placeContactsContent .place-contact .uk-text-meta {
+  color: #999!important;
+}
+
+#placeContactsContent .place-contact .uk-badge {
+  background-color: #1e87f0!important;
+  color: #FFF!important;
+  margin: 5px;
+  font-size: 12px;
+}
+
+#placeContactsContent .place-contact .uk-label {
+  background-color: #EEE!important;
+  margin: 5px;
+  font-size: 12px;
+}
+
+#contactDetailsOverlay .uk-offcanvas-bar {
+  width: 75%!important;
+}
+
+#contactDetailsOverlay .uk-offcanvas-bar a {
+  color: rgba(255,255,255,.7)!important;
+}
+
+#contactDetailsOverlay .uk-offcanvas-bar .uk-list-striped>li:nth-of-type(odd) {
+  background-color: rgba(255,255,255,0.009)!important;
+}
+
+#contactDetailsOverlay  {
+  .contact-details {
+    .contact-details-images {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+
+      .contact-details-image {
+        height: 200px;
+        flex: 1;
+        margin: 0 15px 15px;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+}

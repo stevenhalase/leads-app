@@ -7,11 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <link rel="stylesheet" type="text/css" href="/fonts/fonts.min.css" /> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/css/uikit.min.css" />
+    <link rel="stylesheet" href="/css/snazzy-info-window.min.css">
     <link rel="stylesheet" href="/css/main.css">
   </head>
   <body>
 
-    <div class="uk-container">
+    <div class="uk-container ">
       <div class="uk-flex uk-flex-center uk-margin">
         <div class="uk-card uk-card-default uk-card-body uk-flex-1">
             <form>
@@ -35,18 +36,17 @@
         </div>
       </div>
 
-      <div class="uk-flex uk-flex-center uk-margin">
-        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
-            <ul id="placesResultsList" class="uk-list uk-list-divider"></ul>
-        </div>
-      </div>
+      <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap"></div>
     </div>
+    <div id="placeDetailsOverlay" uk-offcanvas="overlay: true"></div>
+    <div id="contactDetailsOverlay" uk-offcanvas="overlay: true, flip: true"></div>
     
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBUi4ei2kP69AvGM2jYcU6jFVBhhmKW3xk&libraries=places"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit-icons.min.js"></script>
+    <script src="/js/snazzy-info-window.min.js"></script>
     <script src="/js/main.js"></script>
   </body>
 </html>
