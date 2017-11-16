@@ -36,7 +36,12 @@
         </div>
       </div>
 
-      <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap"></div>
+      <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap">
+        <div id="noResults" class="uk-card uk-card-large uk-card-default uk-width-1-1">
+          <span uk-icon="icon: warning"></span> No results found.
+          <p class="no-results-description uk-text-meta">Try using more descriptive terms</p>
+        </div>
+      </div>
     </div>
     <div id="placeDetailsOverlay" uk-offcanvas="overlay: true"></div>
     <div id="contactDetailsOverlay" uk-offcanvas="overlay: true, flip: true"></div>

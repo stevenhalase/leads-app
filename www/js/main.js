@@ -11,9 +11,11 @@ class LeadsMap {
     this.SearchInput = $('#searchInput');
     this.SearchButton = $('#searchBtn');
     this.PlacesResultsList = $('#placesResultsList');
+    this.NoResultsSelector = '#noResults';
     this.MapSpinner = $('#mapSpinner');
     this.PlaceDetailsOverlaySelector = '#placeDetailsOverlay';
     this.PlaceDetailsOverlayElement = $(this.PlaceDetailsOverlaySelector);
+    this.PlaceMoreDetailsButtonSelector = '#placeMoreDetailsBtn';
     this.PlaceContactsButtonSelector = '#placeGetContactsBtn';
     this.PlaceContactsContentSelector = '#placeContactsContent';
     this.ContactDetailsButtonSelector = '.place-contact-details-button';
@@ -78,6 +80,7 @@ class LeadsMap {
   }
 
   SearchPlaces(searchTerm) {
+    this.ShowMapSpinner();
     this.GetNearbyPlaces(searchTerm);
   }
 
@@ -96,8 +99,16 @@ class LeadsMap {
         this.MapFitBounds();
         console.log(results);
         this.DisplayResultsList();
+        this.HideMapSpinner();
+      } else {
+        this.DisplayNoResultsFound();
+        this.HideMapSpinner();
       }
     });
+  }
+
+  DisplayNoResultsFound() {
+    $(this.NoResultsSelector).addClass('visible');
   }
 
   AddNearbyPlaceMarker(place) {
@@ -132,17 +143,22 @@ class LeadsMap {
         },
         closeWhenOthersOpen: true
     });
-    
-    this.Places.push({ 
-      information: { place: place }, 
-      mapsInfo: { marker: marker, label: labelText } 
+
+    let newPlace = new Place({
+      name : place.name,
+      place_id : place.place_id,
+      vicinity : place.vicinity,
+      marker : marker,
+      marker_label : labelText
     });
+
+    this.Places.push(newPlace);
   }
 
   MapFitBounds() {
     let bounds = new google.maps.LatLngBounds();
     for (let place of this.Places) {
-      bounds.extend(place.mapsInfo.marker.getPosition());
+      bounds.extend(place.marker.getPosition());
     }
 
     this.Map.fitBounds(bounds);
@@ -156,16 +172,16 @@ class LeadsMap {
   }
 
   AddResultToResultsList(place) {
-    let html = '<div id="place-' + place.information.place.place_id + '" class="place-item uk-card uk-card-small uk-card-default uk-card-hover">' +
+    let html = '<div id="place-' + place.place_id + '" class="place-item uk-card uk-card-small uk-card-default uk-card-hover">' +
                 '<div class="uk-card-body">' +
-                  '<div class="place-item-marker"><img src="assets/pin-small.png"><span>' + place.mapsInfo.label + '</span></div>' +
+                  '<div class="place-item-marker"><img src="assets/pin-small.png"><span>' + place.marker_label + '</span></div>' +
                   '<div class="place-item-information">' +
-                    '<div class="place-item-title uk-text-bold">' + place.information.place.name + '</div>' +
-                    '<div class="uk-text-meta">' + place.information.place.vicinity + '</div>' +
+                    '<div class="place-item-title uk-text-bold">' + place.name + '</div>' +
+                    '<div class="uk-text-meta">' + place.vicinity + '</div>' +
                   '</div>' +
                 '</div>' +
                 '<div class="uk-card-footer">' +
-                  '<button id="place-details-button-' + place.information.place.place_id + '" class="uk-button uk-button-primary uk-button-small uk-align-center">Get Details</button>' +
+                  '<button id="place-details-button-' + place.place_id + '" class="uk-button uk-button-primary uk-button-small uk-align-center">Get Details</button>' +
                 '</div>' +
               '</div>';
     $(this.PlacesResultsList).append(html);
@@ -188,9 +204,9 @@ class LeadsMap {
 
   OpenInfoWindow(placeId) {
     let placeIndex = this.Places.findIndex(el => {
-      return el.information.place.place_id === placeId;
+      return el.place_id === placeId;
     });
-    google.maps.event.trigger(this.Places[placeIndex].mapsInfo.marker, 'click');
+    google.maps.event.trigger(this.Places[placeIndex].marker, 'click');
   }
 
   GetPlaceDetails(placeId) {
@@ -200,13 +216,16 @@ class LeadsMap {
     this.PlacesService.getDetails(request, (place, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         let placeIndex = this.Places.findIndex(el => {
-          return el.information.place.place_id === placeId;
+          return el.place_id === placeId;
         });
-        this.Places[placeIndex].placeDetails = place;
+
+        this.MapAdditionalGmapsPlaceDetails(this.Places[placeIndex], place);
+
         this.AddPlaceDetails(this.Places[placeIndex]);
 
-        if (this.Places[placeIndex].placeDetails && this.Places[placeIndex].placeDetails.website) {
-          this.AddPlaceContactsButtonHandler(this.Places[placeIndex].placeDetails.website);
+        if (this.Places[placeIndex].website !== '') {
+          this.AddMoreDetailsButtonHandler(this.Places[placeIndex]);
+          this.AddPlaceContactsButtonHandler(this.Places[placeIndex]);
         } else {
           this.DisableElement(this.PlaceContactsButtonSelector);
         }
@@ -216,29 +235,62 @@ class LeadsMap {
     });
   }
 
+  MapAdditionalGmapsPlaceDetails(place, gMapsPlace) {
+    place.address = new Address({
+      house_number: gMapsPlace.address_components.find(el => {
+        return el.types.includes('street_number');
+      }).long_name,
+      street: gMapsPlace.address_components.find(el => {
+        return el.types.includes('route');
+      }).long_name,
+      city: gMapsPlace.address_components.find(el => {
+        return el.types.includes('locality');
+      }).long_name,
+      state: gMapsPlace.address_components.find(el => {
+        return el.types.includes('administrative_area_level_1');
+      }).long_name,
+      zip_code: gMapsPlace.address_components.find(el => {
+        return el.types.includes('postal_code');
+      }).long_name,
+      country: gMapsPlace.address_components.find(el => {
+        return el.types.includes('country');
+      }).long_name,
+    });
+
+    place.location = new Location({
+      latitude: gMapsPlace.geometry.location.lat(), 
+      longitude: gMapsPlace.geometry.location.lng()
+    });
+
+    place.website = gMapsPlace.website || '';
+    place.phone_number = gMapsPlace.formatted_phone_number || '';
+  }
+
   AddPlaceDetails(place) {
     let html = '<div class="uk-offcanvas-bar">' +
                   '<div class="place-details">' +
-                    '<h1 class="uk-heading-divider">' + place.information.place.name + '</h1>';
+                    '<h1 class="uk-heading-divider">' + place.name + '</h1>';
 
-    if (typeof place.placeDetails.formatted_phone_number !== 'undefined') {
-      html += '<div><span class="uk-text-bold uk-margin-right">Phone</span><a class="uk-link-text" href="tel:' + place.placeDetails.formatted_phone_number + '"><span class="uk-text-meta">' + place.placeDetails.formatted_phone_number + '</span></a></div>';
+    if (typeof place.phone_number !== '') {
+      html += '<div><span class="uk-text-bold uk-margin-right">Phone</span><a class="uk-link-text" href="tel:' + place.phone_number + '"><span class="uk-text-meta">' + place.phone_number + '</span></a></div>';
     }
 
-    if (typeof place.placeDetails.website !== 'undefined') {
-      html += '<div><span class="uk-text-bold uk-margin-right">Website</span><a class="uk-link-text" href="' + place.placeDetails.website + '" target="_blank"><span class="uk-text-meta">' + place.placeDetails.website + '</span></a></div>';
+    if (typeof place.website !== '') {
+      html += '<div><span class="uk-text-bold uk-margin-right">Website</span><a class="uk-link-text" href="' + place.website + '" target="_blank"><span class="uk-text-meta">' + place.website + '</span></a></div>';
     }
 
-    if (typeof place.placeDetails.formatted_address !== 'undefined') {
-      html += '<div><span class="uk-text-bold uk-margin-right">Address</span><span class="uk-text-meta">' + place.placeDetails.formatted_address + '</span></div>';
+    if (typeof place.address !== {}) {
+      html += '<div><span class="uk-text-bold uk-margin-right">Address</span><span class="uk-text-meta">' + place.address.display + '</span></div>';
     }
+
+    html += '<div><button id="placeMoreDetailsBtn" class="more-button uk-button uk-button-text uk-button-small"><span uk-icon="icon: plus-circle"></span><span uk-icon="icon: check"></span><span uk-icon="icon: check"></span> More Details</button></div>'
     
     html += '</div>' +
             '<hr class="uk-divider-icon">' +
             '<div class="place-contacts">' +
               '<div class="place-contacts-header uk-flex uk-flex-row uk-flex-between uk-margin">' +
                 '<span class="uk-text-lead">Contacts</span>' +
-                '<button id="placeGetContactsBtn" class="uk-button uk-button-primary uk-button-small">Get Contacts</button>' +
+                '<button id="placeGetContactsBtn" class="more-button uk-button uk-button-text uk-button-small"><span uk-icon="icon: plus-circle"></span><span uk-icon="icon: check"></span><span uk-icon="icon: question"></span> Get Contacts</button>' +
               '</div>' +
               '<div id="placeContactsContent" class="place-contacts-content uk-flex uk-flex-row uk-flex-around uk-flex-wrap"></div>' +
             '</div>' +
@@ -249,56 +301,136 @@ class LeadsMap {
     $(this.PlaceDetailsOverlayElement).append(html);
   }
 
-  AddPlaceContactsButtonHandler(businessURL) {
-    $(this.PlaceContactsButtonSelector).click(e => {
+  AddMoreDetailsButtonHandler(businessURL) {
+    $(this.PlaceMoreDetailsButtonSelector).click(e => {
       e.preventDefault();
-      $(this.PlaceContactsContentSelector).empty();
-      this.GetHunterDetails(businessURL);
-      this.GetAnyMailDetails(businessURL);
+      this.DisableElement(this.PlaceMoreDetailsButtonSelector);
+      this.CompleteMoreButton(this.PlaceMoreDetailsButtonSelector);
+      this.GetFullContactsDetails(businessURL);
     });
   }
 
-  GetHunterDetails(businessURL) {
-    this.APIService.GetHunterDetails(businessURL)
-      .then(hunterData => {
-        console.log(hunterData);
-        this.AddHunterContactsDetails(hunterData.data.emails);
-
-        this.AddContactDetailsButtonHandler();
+  GetFullContactsDetails(businessURL) {
+    this.APIService.GetFullContactDetails(businessURL)
+      .then(fullContactData => {
+        console.log(fullContactData);
+        this.AddMorePlaceDetails(fullContactData);
       })
       .catch(error => {
         console.log(error);
       })
+  }
+
+  AddMorePlaceDetails(placeDetails) {
+    let html = '';
+    
+    $(this.PlaceDetailsOverlayElement).append(html);
+  }
+
+  AddPlaceContactsButtonHandler(place) {
+    $(this.PlaceContactsButtonSelector).click(e => {
+      e.preventDefault();
+      this.DisableElement(this.PlaceContactsButtonSelector);
+      this.CompleteMoreButton(this.PlaceContactsButtonSelector);
+      $(this.PlaceContactsContentSelector).empty();
+      this.GetHunterDetails(place);
+      this.GetAnyMailDetails(place);
+    });
+  }
+
+  GetHunterDetails(place) {
+    this.APIService.GetHunterDetails(place.website)
+      .then(hunterData => {
+        console.log(hunterData);
+        this.MapHunterContacts(place, hunterData.data.emails);
+        this.AddContactsDetails(place);
+
+        this.AddContactDetailsButtonHandler(place);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  MapHunterContacts(place, hunterEmails) {
+    for (let email of hunterEmails) {
+      let newContact = new Contact({
+        emails: [ new Email({
+          email_address: email.value,
+          confidence: email.confidence,
+          type: email.type
+        }) ]
+      });
+
+      if (email.first_name !== '' && email.last_name !== '') {
+        newContact.names.push(new Name({
+          first_name: email.first_name,
+          last_name: email.last_name,
+        }));
+      }
+      place.contacts.push(newContact);
+    }
   }
 
   GetAnyMailDetails(businessURL) {
     this.APIService.GetAnyMailDetails(businessURL)
       .then(anymailData => {
         console.log(anymailData);
-        this.AddAnyMailContactsDetails(anymailData.emails);
+        this.MapAnyMailContacts(place, anymailData.emails);
+        this.AddContactsDetails(place);
       })
       .catch(error => {
         console.log(error);
       })
   }
 
-  AddHunterContactsDetails(contacts) {
-    for (let contact of contacts) {
+  MapAnyMailContacts(place, anymailEmails) {
+    for (let email of anymailEmails) {
+      place.contacts.push(new Contact({
+        emails: [ new Email({
+          email_address: email.value,
+          type: email.email_class
+        }) ]
+      }));
+    }
+  }
+
+  AddContactsDetails(place) {
+    for (let contact of place.contacts) {
+
+      let firstName = '';
+      let lastName = '';
+      if (contact.names.length > 0) {
+        firstName = contact.names[0].first_name;
+        lastName = contact.names[0].last_name;
+      }
+      
+      let email = contact.emails[0].email_address;
+      let confidence = contact.emails[0].confidence;
+      let type = contact.emails[0].type;
+
       let html = '<div class="place-contact uk-card uk-card-small uk-card-default uk-card-hover">' +
                   '<div class="uk-card-body">';
 
-      if (contact.first_name && contact.last_name) {
-        html +=       '<div class="uk-text-bold"><a href="mailto:' + contact.value + '">' + contact.value + '</a></div>' +
-                      '<div class="uk-text-meta">' + contact.first_name + ' ' + contact.last_name + '</div>';
+      if (firstName !== '' && lastName !== '' && email !== '') {
+        html +=       '<div class="uk-text-bold"><a href="mailto:' + email + '">' + email + '</a></div>' +
+                      '<div class="uk-text-meta">' + firstName + ' ' + lastName + '</div>';
       } else {
-        html +=       '<div class="uk-text-bold"><a href="mailto:' + contact.value + '">' + contact.value + '</a></div>';
+        html +=       '<div class="uk-text-bold"><a href="mailto:' + email + '">' + email + '</a></div>';
       }
 
       html +=     '</div>' +
-                  '<div class="uk-card-footer">' +
-                    '<span class="uk-badge">' + contact.confidence + '% Confidence</span>' +
-                    '<span class="uk-label">' + contact.type + '</span>' +
-                    '<button class="place-contact-details-button uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Get Details</button>' +
+                  '<div class="uk-card-footer">';
+
+      if (confidence !== '') {
+        html +=     '<span class="uk-badge">' + confidence + '% Confidence</span>';
+      }
+
+      if (type !== '') {
+        html +=     '<span class="uk-label">' + type + '</span>';
+      }
+
+      html +=       '<button class="place-contact-details-button uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Get Details</button>' +
                   '</div>' +
                 '</div>';
 
@@ -306,40 +438,35 @@ class LeadsMap {
     }
   }
 
-  AddAnyMailContactsDetails(contacts) {
-    for (let contact of contacts) {
-      let html = '<div class="place-contact uk-card uk-card-small uk-card-default uk-card-hover">' +
-                  '<div class="uk-card-body">' +
-                    '<div class="uk-text-bold"><a href="mailto:' + contact.email + '">' + contact.email + '</a></div>' +
-                  '</div>' +
-                  '<div class="uk-card-footer">' +
-                    '<span class="uk-label">' + contact.email_class + '</span>' +
-                    '<button id="contactDetailsButton" class="place-contact-details-button uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Get Details</button>' +
-                  '</div>' +
-                '</div>';
-
-      $(this.PlaceContactsContentSelector).append(html);
-    }
-  }
-
-  AddContactDetailsButtonHandler() {
+  AddContactDetailsButtonHandler(place) {
     $(this.ContactDetailsButtonSelector).click(e => {
       e.preventDefault();
       let target = e.target;
 
       let email = $(target.parentElement.parentElement).find('.uk-text-bold').text();
-      let firstName = $(target.parentElement.parentElement).find('.uk-text-meta').text().split(' ')[0];
-      let lastName = $(target.parentElement.parentElement).find('.uk-text-meta').text().split(' ')[1];
+
+      let contactIndex = place.contacts.findIndex(el => {
+        return el.emails[0].email_address == email;
+      })
       
-      this.GetPiplDetails(email, firstName, lastName);
+      this.GetPiplDetails(place.contacts[contactIndex]);
     });
   }
 
-  GetPiplDetails(email, firstName, lastName) {
+  GetPiplDetails(contact) {
+    let email = contact.emails[0].email_address;
+    let firstName = '';
+    let lastName = '';
+    if (contact.names.length > 0) {
+      firstName = contact.names[0].first_name;
+      lastName = contact.names[0].last_name;
+    }
+
     this.APIService.GetPiplDetails(email, firstName, lastName)
       .then(piplData => {
         console.log(piplData);
-        this.AddPiplContactDetails(piplData.person);
+        this.MapPiplContactDetails(contact, piplData.person);
+        this.AddPiplContactDetails(contact);
         this.ShowContactDetailsOverlay();
       })
       .catch(error => {
@@ -347,15 +474,101 @@ class LeadsMap {
       })
   }
 
-  AddPiplContactDetails(person) {
+  MapPiplContactDetails(contact, piplDetails) {
+
+    if (typeof piplDetails.images !== 'undefined') {
+      for (let image of piplDetails.images) {
+        contact.images.push(new Image({
+          url: image.url
+        }));
+      }
+    }
+
+    if (typeof piplDetails.names !== 'undefined') {
+      for (let name of piplDetails.names) {
+        contact.names.push(new Name({
+          first_name: name.first,
+          middle_name: name.middle,
+          last_name: name.last
+        }));
+      }
+    }
+
+    if (typeof piplDetails.usernames !== 'undefined') {
+      for (let username of piplDetails.usernames) {
+        contact.usernames.push(new UserName({
+          username: username.content
+        }));
+      }
+    }
+
+    if (typeof piplDetails.phones !== 'undefined') {
+      for (let phone of piplDetails.phones) {
+        contact.phone_numbers.push(new PhoneNumber({
+          phone_number: phone.display
+        }));
+      }
+    }
+
+    if (typeof piplDetails.addresses !== 'undefined') {
+      for (let address of piplDetails.addresses) {
+        contact.addresses.push(new Address({
+          house_number: address.house,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          zip_code: address.zip_code,
+          country: address.country,
+          display: address.display
+        }));
+      }
+    }
+
+    if (typeof piplDetails.jobs !== 'undefined') {
+      for (let job of piplDetails.jobs) {
+        contact.jobs.push(new Job({
+          title: job.title || '',
+          organization: job.organization || '',
+          industry: job.industry || '',
+          date_range: job.date_range || {
+            start: '',
+            end: ''
+          },
+          display: job.display
+        }));
+      }
+    }
+
+    if (typeof piplDetails.educations !== 'undefined') {
+      for (let education of piplDetails.educations) {
+        contact.educations.push(new Education({
+          school: education.school,
+          date_range: education.date_range || {
+            start: '',
+            end: ''
+          },
+          display: education.display
+        }));
+      }
+    }
+
+    if (typeof piplDetails.urls !== 'undefined') {
+      for (let url of piplDetails.urls) {
+        contact.links.push(new Link({
+          url: url.url
+        }));
+      }
+    }
+
+  }
+
+  AddPiplContactDetails(contact) {
     let html = '<div class="uk-offcanvas-bar">' +
                   '<div class="contact-details">' +
                     '<div class="contact-details-images">';
 
-    if (typeof person.images !== 'undefined') {
-      for (let image of person.images) {
-        html +=       '<div class="contact-details-image" style="background-image: url(' + image.url + ')"></div>';
-      }
+    for (let image of contact.images) {
+      html +=         '<div class="contact-details-image" style="background-image: url(' + image.url + ')"></div>';
     }
 
     html +=         '</div>' +
@@ -364,10 +577,8 @@ class LeadsMap {
                       '<h4>Names</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.names !== 'undefined') {
-      for (let name of person.names) {
-        html +=       '<li class="contact-details-name">' + name.display + '</li>';
-      }
+    for (let name of contact.names) {
+      html +=         '<li class="contact-details-name">' + name.first_name + ' ' + name.last_name + '</li>';
     }
 
     html +=           '</ul>' +
@@ -376,10 +587,8 @@ class LeadsMap {
                       '<h4>Usernames</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.usernames !== 'undefined') {
-      for (let userName of person.usernames) {
-        html +=       '<li class="contact-details-username">' + userName.content + '</li>';
-      }
+    for (let userName of contact.usernames) {
+      html +=         '<li class="contact-details-username">' + userName.username + '</li>';
     }
 
     html +=           '</ul>' +
@@ -388,10 +597,8 @@ class LeadsMap {
                       '<h4>Phone Numbers</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.phones !== 'undefined') {
-      for (let phone of person.phones) {
-        html +=       '<li class="contact-details-phone"><a href="tel:' + phone.number + '" target="_blank">' + phone.display + ' <span uk-icon="icon: forward"></span></a></li>';
-      }
+    for (let phone of contact.phone_numbers) {
+      html +=         '<li class="contact-details-phone"><a href="tel:' + phone.phone_number + '" target="_blank">' + phone.phone_number + ' <span uk-icon="icon: forward"></span></a></li>';
     }
 
     html +=           '</ul>' +
@@ -400,10 +607,8 @@ class LeadsMap {
                       '<h4>Addresses</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.addresses !== 'undefined') {
-      for (let address of person.addresses) {
-        html +=       '<li class="contact-details-address"><a href="https://www.google.com/maps/place/' + encodeURIComponent(address.display) + '" target="_blank">' + address.display + ' <span uk-icon="icon: forward"></span></a></li>';
-      }
+    for (let address of contact.addresses) {
+      html +=         '<li class="contact-details-address"><a href="https://www.google.com/maps/place/' + encodeURIComponent(address.display) + '" target="_blank">' + address.display + ' <span uk-icon="icon: forward"></span></a></li>';
     }
 
     html +=           '</ul>' +
@@ -412,10 +617,8 @@ class LeadsMap {
                       '<h4>Jobs</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.jobs !== 'undefined') {
-      for (let job of person.jobs) {
-        html +=       '<li class="contact-details-job">' + job.display + '</li>';
-      }
+    for (let job of contact.jobs) {
+      html +=         '<li class="contact-details-job">' + job.display + '</li>';
     }
 
     html +=           '</ul>' +
@@ -424,10 +627,8 @@ class LeadsMap {
                       '<h4>Educations</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.educations !== 'undefined') {
-      for (let education of person.educations) {
-        html +=       '<li class="contact-details-education">' + education.display + '</li>';
-      }
+    for (let education of contact.educations) {
+      html +=         '<li class="contact-details-education">' + education.display + '</li>';
     }
 
     html +=           '</ul>' +
@@ -436,10 +637,8 @@ class LeadsMap {
                       '<h4>URLs</h4>' +
                       '<ul class="uk-list uk-list-striped">';
 
-    if (typeof person.urls !== 'undefined') {
-      for (let url of person.urls) {
-        html +=       '<li class="contact-details-url"><a href="' + url.url + '" target="_blank">' + url.url + ' <span uk-icon="icon: forward"></span></a></li>';
-      }
+    for (let link of contact.links) {
+      html +=         '<li class="contact-details-url"><a href="' + link.url + '" target="_blank">' + link.url + ' <span uk-icon="icon: forward"></span></a></li>';
     }
 
     html +=           '</ul>' +
@@ -452,16 +651,6 @@ class LeadsMap {
     $(this.ContactDetailsOverlayElement).empty();
     $(this.ContactDetailsOverlayElement).append(html);
   }
-
-  // GetFullContactsDetails(businessURL) {
-  //   this.APIService.GetFullContactDetails(businessURL)
-  //     .then(data => {
-  //       console.log(data);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
 
   InitPlaceDetailsOverlay() {
     UIkit.offcanvas(this.PlaceDetailsOverlaySelector, {
@@ -525,6 +714,14 @@ class LeadsMap {
     $(selector).prop('disabled', true);
   }
 
+  CompleteMoreButton(selector) {
+    $(selector).addClass('completed');
+  }
+
+  ShowSpinner() {
+
+  }
+
   ShowMapSpinner() {
     $(this.MapSpinner).addClass('show');
   }
@@ -532,37 +729,38 @@ class LeadsMap {
   HideMapSpinner() {
     $(this.MapSpinner).removeClass('show');
   }
+
 }
 
 class APIService {
   constructor() {
-    // this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
-    // this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
-    // this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
-    // this.PiplEndpoint = 'http://localhost:3090/api/pipl';
-    this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
-    this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
-    this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
-    this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
+    this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
+    this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
+    this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
+    this.PiplEndpoint = 'http://localhost:3090/api/pipl';
+  //   this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
+  //   this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
+  //   this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
+  //   this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
   }
 
-  // GetFullContactDetails(businessURL) {
-  //   return new Promise((resolve, reject) => {
-  //     $.ajax({
-  //       method: 'POST',
-  //       url: this.FullContactEndpoint,
-  //       data: {
-  //         businessURL: businessURL
-  //       },
-  //       success: result => {
-  //         resolve(result);
-  //       },
-  //       error: error => {
-  //         reject(error);
-  //       }
-  //     })
-  //   });
-  // }
+  GetFullContactDetails(businessURL) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        method: 'POST',
+        url: this.FullContactEndpoint,
+        data: {
+          businessURL: businessURL
+        },
+        success: result => {
+          resolve(JSON.parse(result));
+        },
+        error: error => {
+          reject(JSON.parse(error));
+        }
+      })
+    });
+  }
 
   GetHunterDetails(businessURL) {
     return new Promise((resolve, reject) => {
@@ -618,5 +816,121 @@ class APIService {
         }
       })
     });
+  }
+}
+
+class Place {
+  constructor({ place_id = '', name = '', vicinity = '', marker = {}, marker_label = '' } = {}) {
+    this.place_id = place_id;
+    this.name = name;
+    this.vicinity = vicinity;
+    this.address = '';
+    this.phone_number = '';
+    this.website = '';
+    this.location = {};
+    this.marker = marker;
+    this.marker_label = marker_label;
+    this.contacts = [];
+  }
+}
+
+class Location {
+  constructor({ latitude = '', longitude = '' } = {}) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+}
+
+class Contact {
+  constructor({ emails = [], names = [], addresses = [], phone_numbers = [], educations = [], images = [], jobs = [], links = [], usernames = [] } = {}) {
+    this.emails = emails;
+    this.names = names;
+    this.addresses = addresses;
+    this.phone_numbers = phone_numbers;
+    this.educations = educations;
+    this.images = images;
+    this.jobs = jobs;
+    this.links = links;
+    this.usernames = usernames;
+  }
+}
+
+class Email {
+  constructor({ email_address = '', confidence = '', type = '' } = {}) {
+    this.email_address = email_address;
+    this.confidence = confidence;
+    this.type = type
+  }
+}
+
+class Name {
+  constructor({ first_name = '', middle_name = '', last_name = '' } = {}) {
+    this.first_name = first_name;
+    this.middle_name = middle_name;
+    this.last_name = last_name;
+  }
+}
+
+class Address {
+  constructor({ house_number = '', street = '', city = '', state = '', zip_code = '', country = '', display = '' } = {}) {
+    this.house_number = house_number;
+    this.street = street;
+    this.city = city;
+    this.state = state;
+    this.zip_code = zip_code;
+    this.country = country;
+    this.display = display;
+
+    if (this.display === '') {
+      this._setDisplay();
+    }
+  }
+
+  _setDisplay() {
+    this.display = this.house_number + ' ' + this.street + ' ' + this.city + ', ' + this.state + ' ' + this.zip_code + ' ' + this.country;
+  }
+}
+
+class PhoneNumber {
+  constructor({ phone_number = '' } = {}) {
+    this.phone_number = phone_number;
+  }
+}
+
+class Education {
+  constructor({ school = '', date_range = { start: '', end: '' }, display = '' } = {}) {
+    this.school = school;
+    this.date_range = date_range,
+    this.display = display;
+  }
+}
+
+class Job {
+  constructor({ title = '', organization = '', industry = '', date_range = { start: '', end: '' }, display = '' } = {}) {
+    this.title = title;
+    this.organization = organization;
+    this.industry = industry;
+    this.date_range = date_range;
+    this.display = display;
+  }
+}
+
+class Image {
+  constructor({ url = '' } = {}) {
+    this.url = url;
+  }
+}
+
+class Link {
+  constructor({ domain = '', name = '', url = '' } = {}) {
+    this.domain = domain;
+    this.name = name;
+    this.url = url;
+  }
+}
+
+class UserName {
+  constructor({ username } = {}) {
+    this.username = username;
   }
 }
