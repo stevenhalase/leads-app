@@ -12,45 +12,29 @@
   </head>
   <body>
 
-    <div class="uk-container ">
-      <div class="uk-flex uk-flex-center uk-margin">
-        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
-            <form>
-              <fieldset class="uk-fieldset">
-                <div class="uk-flex uk-flex-center">
-                    <input id="searchInput" class="uk-input uk-form-large" type="text">
-                    <button id="searchBtn" class="uk-button uk-button-primary">Search</button>
-                </div>
-              </fieldset>
-            </form>
-        </div>
-      </div>
+    <div class="uk-container" id="leadsApp">
+      <leads-search v-on:search="GetNearbyPlaces" :searchinput="searchInput" :searchenabled="searchEnabled"></leads-search>
 
-      <div class="uk-flex uk-flex-center uk-margin">
-        <div class="uk-card uk-card-default uk-card-body uk-flex-1">
-            <div id="map"></div>
-            <div id="mapSpinner">
-              <div uk-spinner></div>
-              <div class="uk-text-meta">Getting your current location...</div>
-            </div>
-        </div>
-      </div>
+      <leads-map :mapspinnerenabled="mapSpinnerEnabled"></leads-map>
 
       <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap">
-        <div id="noResults" class="uk-card uk-card-large uk-card-default uk-width-1-1">
+        <div v-if="places.length == 0" id="noResults" class="uk-card uk-card-large uk-card-default uk-width-1-1">
           <span uk-icon="icon: warning"></span> No results found.
           <p class="no-results-description uk-text-meta">Try using more descriptive terms</p>
         </div>
+        <leads-place v-on:getplacedetails="GetPlaceDetails" v-on:openinfowindow="OpenInfoWindow" v-for="place in places" :key="place.place_id" :place="place"></leads-place>
       </div>
+
+      <leads-place-overlay v-on:getcontactdetails="GetContactDetails" v-on:getcontacts="GetContacts" :selectedplace="selectedPlace"></leads-place-overlay>
+      <leads-contact-overlay :contact="selectedContact"></leads-contact-overlay>
     </div>
-    <div id="placeDetailsOverlay" uk-offcanvas="overlay: true"></div>
-    <div id="contactDetailsOverlay" uk-offcanvas="overlay: true, flip: true"></div>
     
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBUi4ei2kP69AvGM2jYcU6jFVBhhmKW3xk&libraries=places"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit-icons.min.js"></script>
+    <script src="https://unpkg.com/vue"></script>
     <script src="/js/snazzy-info-window.min.js"></script>
     <script src="/js/main.js"></script>
   </body>

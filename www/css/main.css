@@ -12,9 +12,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  display: none; }
-  #mapSpinner.show {
-    display: flex; }
+  display: flex; }
 
 .si-content {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
@@ -51,7 +49,7 @@
         color: #888; }
 
 #noResults {
-  display: none;
+  display: flex;
   padding: 25px;
   flex-wrap: wrap;
   justify-content: center;
@@ -62,8 +60,6 @@
     flex-basis: 100%;
     text-align: center;
     margin: 5px 0; }
-  #noResults.visible {
-    display: flex; }
 
 #placeDetailsOverlay .uk-offcanvas-bar {
   width: 75% !important; }
@@ -162,6 +158,11 @@
 
 #contactDetailsOverlay .uk-offcanvas-bar {
   width: 75% !important; }
+  #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-tabs li a {
+    font-size: 12px !important; }
+  #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-tabs .uk-active a {
+    color: #FFF !important;
+    border-color: #1e87f0; }
   #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-details-images {
     display: flex;
     flex-direction: row;

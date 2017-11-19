@@ -47,7 +47,7 @@
 }
 
 #noResults {
-  display: none;
+  display: flex;
 
   padding: 25px;
   flex-wrap: wrap;
@@ -62,10 +62,6 @@
     flex-basis: 100%;
     text-align: center;
     margin: 5px 0;
-  }
-
-  &.visible {
-    display: flex;
   }
 }
 
@@ -224,6 +220,22 @@
     width: 75%!important;
 
     .contact-details {
+
+      .contact-tabs {
+        li {
+          a {
+            font-size: 12px!important;
+          }
+        }
+
+        .uk-active {
+          a {
+            color: #FFF!important;
+            border-color: #1e87f0;
+          }
+        }
+        
+      }
 
       .contact-details-images {
         display: flex;

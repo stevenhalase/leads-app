@@ -13,11 +13,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  display: none;
-
-  &.show {
-    display: flex;
-  }
+  display: flex;
 }
 
 .si-content {
