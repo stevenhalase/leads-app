@@ -12,21 +12,29 @@
   </head>
   <body>
 
-    <div class="uk-container" id="leadsApp">
-      <leads-search v-on:search="GetNearbyPlaces" :searchinput="searchInput" :searchenabled="searchEnabled"></leads-search>
+    
+    <div class="uk-section" id="leadsApp">
 
-      <leads-map :mapspinnerenabled="mapSpinnerEnabled"></leads-map>
-
-      <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap">
-        <div v-if="places.length == 0" id="noResults" class="uk-card uk-card-large uk-card-default uk-width-1-1">
-          <span uk-icon="icon: warning"></span> No results found.
-          <p class="no-results-description uk-text-meta">Try using more descriptive terms</p>
-        </div>
-        <leads-place v-on:getplacedetails="GetPlaceDetails" v-on:openinfowindow="OpenInfoWindow" v-for="place in places" :key="place.place_id" :place="place"></leads-place>
+      <div class="leads-nav--side-container uk-container">
+        <leads-nav-side></leads-nav-side>
       </div>
 
-      <leads-place-overlay v-on:getcontactdetails="GetContactDetails" v-on:getcontacts="GetContacts" :selectedplace="selectedPlace"></leads-place-overlay>
-      <leads-contact-overlay :contact="selectedContact"></leads-contact-overlay>
+      <div class="leads-content-container uk-container">
+          <leads-search v-on:search="GetNearbyPlaces" :searchinput="searchInput" :searchenabled="searchEnabled"></leads-search>
+          
+          <leads-map :mapspinnerenabled="mapSpinnerEnabled"></leads-map>
+    
+          <div id="placesResultsList" class="uk-flex uk-flex-row uk-flex-around uk-margin uk-flex-wrap">
+            <div v-if="places.length == 0" id="noResults" class="uk-card uk-card-large uk-card-default uk-width-1-1">
+              <span uk-icon="icon: warning"></span> No results found.
+              <p class="no-results-description uk-text-meta">Try using more descriptive terms</p>
+            </div>
+            <leads-place v-on:getplacedetails="GetPlaceDetails" v-on:openinfowindow="OpenInfoWindow" v-for="place in places" :key="place.place_id" :place="place"></leads-place>
+          </div>
+    
+          <leads-place-overlay v-on:getcontactdetails="GetContactDetails" v-on:getcontacts="GetContacts" :selectedplace="selectedPlace"></leads-place-overlay>
+          <leads-contact-overlay :contact="selectedContact"></leads-contact-overlay>
+      </div>
     </div>
     
 
