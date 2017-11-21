@@ -81,33 +81,33 @@ app.post('/api/hunter/domain', function(req, res) {
 
 app.post('/api/anymail/domain', function(req, res) {
 
-  res.json(JSON.stringify({"name":"StatusCodeError","statusCode":404,"message":"404 - \"{\\n  \\\"error\\\": \\\"not_found\\\",\\n  \\\"error_explained\\\": \\\"We could not find an email at retailstoreconstruction.com\\\",\\n  \\\"status\\\": \\\"error\\\"\\n}\"","error":"{\n  \"error\": \"not_found\",\n  \"error_explained\": \"We could not find an email at retailstoreconstruction.com\",\n  \"status\": \"error\"\n}","options":{"method":"POST","uri":"https://api.anymailfinder.com/v3.1/search/domain.json","headers":{"content-type":"application/x-www-form-urlencoded","X-Api-Key":"92e943a739f8bb3f648d7273f75e7273c6b6d08e"},"form":{"domain":"http://www.retailstoreconstruction.com/"},"simple":true,"resolveWithFullResponse":false,"transform2xxOnly":false},"response":{"statusCode":404,"body":"{\n  \"error\": \"not_found\",\n  \"error_explained\": \"We could not find an email at retailstoreconstruction.com\",\n  \"status\": \"error\"\n}","headers":{"access-control-allow-origin":"*","content-type":"application/json","date":"Thu, 16 Nov 2017 02:23:11 GMT","server":"Apache/2.4.23 (Amazon) mod_wsgi/3.5 Python/3.4.3","content-length":"129","connection":"Close"},"request":{"uri":{"protocol":"https:","slashes":true,"auth":null,"host":"api.anymailfinder.com","port":443,"hostname":"api.anymailfinder.com","hash":null,"search":null,"query":null,"pathname":"/v3.1/search/domain.json","path":"/v3.1/search/domain.json","href":"https://api.anymailfinder.com/v3.1/search/domain.json"},"method":"POST","headers":{"content-type":"application/x-www-form-urlencoded","X-Api-Key":"92e943a739f8bb3f648d7273f75e7273c6b6d08e","content-length":54}}}}));
+  // res.json(JSON.stringify({"name":"StatusCodeError","statusCode":404,"message":"404 - \"{\\n  \\\"error\\\": \\\"not_found\\\",\\n  \\\"error_explained\\\": \\\"We could not find an email at retailstoreconstruction.com\\\",\\n  \\\"status\\\": \\\"error\\\"\\n}\"","error":"{\n  \"error\": \"not_found\",\n  \"error_explained\": \"We could not find an email at retailstoreconstruction.com\",\n  \"status\": \"error\"\n}","options":{"method":"POST","uri":"https://api.anymailfinder.com/v3.1/search/domain.json","headers":{"content-type":"application/x-www-form-urlencoded","X-Api-Key":"92e943a739f8bb3f648d7273f75e7273c6b6d08e"},"form":{"domain":"http://www.retailstoreconstruction.com/"},"simple":true,"resolveWithFullResponse":false,"transform2xxOnly":false},"response":{"statusCode":404,"body":"{\n  \"error\": \"not_found\",\n  \"error_explained\": \"We could not find an email at retailstoreconstruction.com\",\n  \"status\": \"error\"\n}","headers":{"access-control-allow-origin":"*","content-type":"application/json","date":"Thu, 16 Nov 2017 02:23:11 GMT","server":"Apache/2.4.23 (Amazon) mod_wsgi/3.5 Python/3.4.3","content-length":"129","connection":"Close"},"request":{"uri":{"protocol":"https:","slashes":true,"auth":null,"host":"api.anymailfinder.com","port":443,"hostname":"api.anymailfinder.com","hash":null,"search":null,"query":null,"pathname":"/v3.1/search/domain.json","path":"/v3.1/search/domain.json","href":"https://api.anymailfinder.com/v3.1/search/domain.json"},"method":"POST","headers":{"content-type":"application/x-www-form-urlencoded","X-Api-Key":"92e943a739f8bb3f648d7273f75e7273c6b6d08e","content-length":54}}}}));
 
-  // if (typeof req.body.businessURL !== 'undefined') {
-  //   var businessURL = req.body.businessURL;
+  if (typeof req.body.businessURL !== 'undefined') {
+    var businessURL = req.body.businessURL;
 
-  //   var anymailUrl = 'https://api.anymailfinder.com/v3.1/search/domain.json';
+    var anymailUrl = 'https://api.anymailfinder.com/v3.1/search/domain.json';
 
-  //   var anymailOptions = {
-  //       method: 'POST',
-  //       uri: anymailUrl,
-  //       headers: {
-  //         'content-type': 'application/x-www-form-urlencoded',
-  //         'X-Api-Key': '92e943a739f8bb3f648d7273f75e7273c6b6d08e'
-  //       },
-  //       form: { domain: businessURL }
-  //   };
+    var anymailOptions = {
+        method: 'POST',
+        uri: anymailUrl,
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+          'X-Api-Key': '92e943a739f8bb3f648d7273f75e7273c6b6d08e'
+        },
+        form: { domain: businessURL }
+    };
     
-  //   rp(anymailOptions)
-  //     .then(function(data) {
-  //       console.log(data)
-  //       res.json(data);
-  //     })
-  //     .catch(function(err) {
-  //       console.log(err);
-  //       res.json(err);
-  //     })
-  // }
+    rp(anymailOptions)
+      .then(function(data) {
+        console.log(data)
+        res.json(data);
+      })
+      .catch(function(err) {
+        console.log(err);
+        res.json(err);
+      })
+  }
 
 })
 

@@ -62,7 +62,7 @@
     margin: 5px 0; }
 
 #placeDetailsOverlay .uk-offcanvas-bar {
-  width: 75% !important; }
+  width: calc(100vw - 230px) !important; }
   #placeDetailsOverlay .uk-offcanvas-bar .place-details div {
     margin: 10px 0; }
 
@@ -90,30 +90,36 @@
     transition: all .25s ease-in-out; }
   #placeDetailsOverlay .more-button:before {
     border-bottom: none !important; }
-  #placeDetailsOverlay .more-button.completed .uk-icon:nth-of-type(1) {
-    opacity: 0;
-    transform: rotate(360deg);
-    transition: all .25s ease-in-out; }
-  #placeDetailsOverlay .more-button.completed .uk-icon:nth-of-type(2) {
-    opacity: 1;
-    transform: rotate(0deg);
-    transition: all .25s ease-in-out; }
-  #placeDetailsOverlay .more-button.completed .uk-icon:nth-of-type(3) {
-    opacity: 0;
-    transform: rotate(360deg);
-    transition: all .25s ease-in-out; }
   #placeDetailsOverlay .more-button[disabled] {
     color: #AAA !important; }
     #placeDetailsOverlay .more-button[disabled] .uk-icon {
       color: #AAA !important;
       opacity: 0; }
-      #placeDetailsOverlay .more-button[disabled] .uk-icon .uk-icon:nth-of-type(1) {
+      #placeDetailsOverlay .more-button[disabled] .uk-icon:nth-of-type(1) {
+        opacity: 0;
+        transform: rotate(-360deg);
+        transition: all .25s ease-in-out; }
+      #placeDetailsOverlay .more-button[disabled] .uk-icon:nth-of-type(1) {
+        opacity: 0;
         transform: rotate(-360deg);
         transition: all .25s ease-in-out; }
       #placeDetailsOverlay .more-button[disabled] .uk-icon:nth-of-type(3) {
         opacity: 1;
         transform: rotate(0deg);
         transition: all .25s ease-in-out; }
+    #placeDetailsOverlay .more-button[disabled].completed .uk-icon:nth-of-type(1) {
+      opacity: 0;
+      transform: rotate(360deg);
+      transition: all .25s ease-in-out; }
+    #placeDetailsOverlay .more-button[disabled].completed .uk-icon:nth-of-type(2) {
+      color: #2ecc71 !important;
+      opacity: 1;
+      transform: rotate(0deg);
+      transition: all .25s ease-in-out; }
+    #placeDetailsOverlay .more-button[disabled].completed .uk-icon:nth-of-type(3) {
+      opacity: 0;
+      transform: rotate(360deg);
+      transition: all .25s ease-in-out; }
 
 #placeContactsContent .place-contact {
   flex: 1;
@@ -157,12 +163,16 @@
       margin-bottom: 0 !important; }
 
 #contactDetailsOverlay .uk-offcanvas-bar {
-  width: 75% !important; }
+  width: calc(100vw - 230px) !important; }
   #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-tabs li a {
     font-size: 12px !important; }
   #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-tabs .uk-active a {
     color: #FFF !important;
     border-color: #1e87f0; }
+  #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-tabs-content a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
   #contactDetailsOverlay .uk-offcanvas-bar .contact-details .contact-details-images {
     display: flex;
     flex-direction: row;
@@ -181,20 +191,39 @@
   #contactDetailsOverlay .uk-offcanvas-bar .uk-list-striped > li:nth-of-type(odd) {
     background-color: rgba(255, 255, 255, 0.009) !important; }
 
+* {
+  box-sizing: border-box !important; }
+
+body {
+  background: #232526;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
+
 .uk-section {
   padding: 0 !important; }
 
 #leadsApp {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap; }
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-height: 100vh;
+  padding-top: 50px !important; }
   #leadsApp .leads-nav--side-container {
-    flex: 0 0 15vw;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 230px;
     padding: 0;
     margin: 0; }
     #leadsApp .leads-nav--side-container .uk-card {
       width: 100%;
       height: 100vh; }
   #leadsApp .leads-content-container {
-    flex: 0 0 85vw;
-    margin: 0; }
+    width: calc(100vw - 230px);
+    margin: 0;
+    max-width: calc(100vw - 230px); }

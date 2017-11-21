@@ -1,13 +1,13 @@
 class APIService {
   constructor() {
-    // this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
-    // this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
-    // this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
-    // this.PiplEndpoint = 'http://localhost:3090/api/pipl';
-    this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
-    this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
-    this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
-    this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
+    this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
+    this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
+    this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
+    this.PiplEndpoint = 'http://localhost:3090/api/pipl';
+    // this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
+    // this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
+    // this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
+    // this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
   }
 
   GetFullContactDetails(businessURL) {
@@ -305,7 +305,7 @@ Vue.component('leads-place-overlay', {
                     <button id="placeMoreDetailsBtn" class="more-button uk-button uk-button-text uk-button-small" :disabled="selectedplace.website === ''">
                       <span uk-icon="icon: plus-circle"></span>
                       <span uk-icon="icon: check"></span>
-                      <span uk-icon="icon: check"></span> More Details
+                      <span uk-icon="icon: question"></span> More Details
                     </button>
                   </div>
                 </div>
@@ -314,7 +314,8 @@ Vue.component('leads-place-overlay', {
                   <div class="place-contacts-header uk-flex uk-flex-row uk-flex-between uk-margin">
                     <span class="uk-text-lead">Contacts</span>
                     <button id="placeGetContactsBtn" class="more-button uk-button uk-button-text uk-button-small" :disabled="selectedplace.website === ''" v-on:click="EmitGetContacts">
-                      <span uk-icon="icon: plus-circle"></span><span uk-icon="icon: check"></span>
+                      <span uk-icon="icon: plus-circle"></span>
+                      <span uk-icon="icon: check"></span>
                       <span uk-icon="icon: question"></span> Get Contacts
                     </button>
                   </div>
@@ -360,24 +361,6 @@ Vue.component('leads-place-contact', {
     }
   }
 })
-
-// Vue.component('leads-contact-contact', {
-//   props: ['contact'],
-//   template: `<div class="place-contact uk-card uk-card-small uk-card-default uk-card-hover">
-//               <div class="uk-card-body">
-//                 <div class="uk-text-bold"><a :href="'mailto:' + contact.emails[0].email_address">{{contact.emails[0].email_address}}</a></div>
-//                 <div class="uk-text-meta">{{contact.names[0].first_name}} {{contact.names[0].last_name}}</div>
-//               </div>
-//               <div class="uk-card-footer">
-//                 <span class="uk-badge">{{contact.emails[0].confidence}}% Confidence</span>
-//                 <span class="uk-label">{{contact.emails[0].type}}</span>
-//                 <button class="place-contact-details-button uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Get Details</button>
-//               </div>
-//             </div>`,
-//   methods: {
-    
-//   }
-// })
 
 Vue.component('leads-contact-overlay', {
   props: ['contact'],
@@ -462,30 +445,26 @@ Vue.component('leads-nav-side', {
   props: [],
   template: `<div class="uk-card uk-card-default uk-card-body uk-width-1-2@s">
               <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
-                  <li class="uk-active"><a href="#">Active</a></li>
-                  <li class="uk-parent">
-                      <a href="#">Parent</a>
-                      <ul class="uk-nav-sub">
-                          <li><a href="#">Sub item</a></li>
-                          <li><a href="#">Sub item</a></li>
-                      </ul>
+                  <li class="uk-active uk-parent">
+                    <a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Leads</a>
+                    <ul class="uk-nav-sub">
+                      <li><a href="#" v-on:click="EmitExportLeadsJSON">Export Leads JSON</a></li>
+                      <li><a href="#" v-on:click="EmitExportLeadsCSV">Export Leads CSV</a></li>
+                  </ul>
                   </li>
-                  <li class="uk-parent">
-                      <a href="#">Parent</a>
-                      <ul class="uk-nav-sub">
-                          <li><a href="#">Sub item</a></li>
-                          <li><a href="#">Sub item</a></li>
-                      </ul>
-                  </li>
-                  <li class="uk-nav-header">Header</li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
-                  <li class="uk-nav-divider"></li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li>
+                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: settings"></span> Settings</a></li>
+                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</a></li>
               </ul>
             </div>`,
   methods: {
-    
+    EmitExportLeadsJSON: function(e) {
+      e.preventDefault();
+      this.$emit('exportleadsjson');
+    },
+    EmitExportLeadsCSV: function(e) {
+      e.preventDefault();
+      this.$emit('exportleadscsv');
+    }
   }
 })
 
@@ -680,18 +659,32 @@ let LeadsApp = new Vue({
       place.phone_number = gMapsPlace.formatted_phone_number || '';
     },
     GetContacts: function(selectedPlace) {
-      this.GetHunterDetails(selectedPlace);
-      this.GetAnyMailDetails(selectedPlace);
-    },
-    GetHunterDetails: function(place) {
-      this.apiService.GetHunterDetails(place.website)
-        .then(hunterData => {
-          console.log(hunterData);
-          this.MapHunterContacts(place, hunterData.data.emails);
+      this.EnableElement('#placeGetContactsBtn', false);
+      let getContactPromises = [
+        this.AddHunterDetails(selectedPlace),
+        // this.AddAnyMailDetails(selectedPlace)
+      ];
+
+      Promise.all(getContactPromises)
+        .then((hunterResponse, anymailResponse) => {
+          console.log(hunterResponse, anymailResponse);
+          this.CompleteActionButton('#placeGetContactsBtn', true);
         })
         .catch(error => {
           console.log(error);
-        })
+        });
+    },
+    AddHunterDetails: function(place) {
+      return new Promise((resolve, reject) => {
+        this.apiService.GetHunterDetails(place.website)
+          .then(hunterData => {
+            this.MapHunterContacts(place, hunterData.data.emails);
+            resolve();
+          })
+          .catch(error => {
+            reject(error);
+          })
+      });
     },
     MapHunterContacts: function(place, hunterEmails) {
       for (let email of hunterEmails) {
@@ -712,26 +705,30 @@ let LeadsApp = new Vue({
         place.contacts.push(newContact);
       }
     },
-    GetAnyMailDetails: function(businessURL) {
-      this.apiService.GetAnyMailDetails(businessURL)
-        .then(anymailData => {
-          console.log(anymailData);
-          this.MapAnyMailContacts(place, anymailData.emails);
-        })
-        .catch(error => {
-          console.log(error);
-        })
-    },
-    MapAnyMailContacts: function(place, anymailEmails) {
-      for (let email of anymailEmails) {
-        place.contacts.push(new Contact({
-          emails: [ new Email({
-            email_address: email.value,
-            type: email.email_class
-          }) ]
-        }));
-      }
-    },
+    // AddAnyMailDetails: function(place) {
+    //   return new Promise((resolve, reject) => {
+    //     this.apiService.GetAnyMailDetails(place.website)
+    //       .then(anymailData => {
+    //         console.log(anymailData);
+    //         this.MapAnyMailContacts(place, anymailData.emails);
+    //         resolve();
+    //       })
+    //       .catch(error => {
+    //         console.log(error);
+    //         reject(error);
+    //       })
+    //   });
+    // },
+    // MapAnyMailContacts: function(place, anymailEmails) {
+    //   for (let email of anymailEmails) {
+    //     place.contacts.push(new Contact({
+    //       emails: [ new Email({
+    //         email_address: email.value,
+    //         type: email.email_class
+    //       }) ]
+    //     }));
+    //   }
+    // },
     GetContactDetails: function(contact) {
       this.selectedContact = contact;
       this.GetPiplDetails(contact);
@@ -846,12 +843,12 @@ let LeadsApp = new Vue({
       UIkit.offcanvas('#placeDetailsOverlay', {
         mode: 'slide',
         flip: true,
-        overlay: true
+        overlay: false
       });
       UIkit.offcanvas('#contactDetailsOverlay', {
         mode: 'slide',
         flip: true,
-        overlay: true
+        overlay: false
       });
     },
     EnableSearch: function(enabled) {
@@ -859,6 +856,16 @@ let LeadsApp = new Vue({
     },
     EnableMapSpinner: function(enabled) {
       this.mapSpinnerEnabled = enabled;
+    },
+    EnableElement: function(selector, enabled) {
+      $(selector).prop('disabled', !enabled);
+    },
+    CompleteActionButton: function(selector, complete) {
+      if (complete) {
+        $(selector).addClass('completed');
+      } else {
+        $(selector).removeClass('completed');
+      }
     },
     EnablePlaceDetailsOverlay: function(enabled) {
       if (enabled) {
@@ -873,6 +880,94 @@ let LeadsApp = new Vue({
       } else {
         UIkit.offcanvas('#contactDetailsOverlay').hide();
       }
+    },
+    ExportLeadsJSON: function() {
+      let _places = [];
+      for (let place of this.places) {
+        _places.push({
+          Address: place.address.display,
+          Contacts: place.contacts,
+          Location: {
+            Latitude: place.location.latitude,
+            Longitude: place.location.longitude
+          },
+          Name: place.name,
+          Phone_Number: place.phone_number,
+          Website: place.website
+        })
+      }
+
+      let placesJSON = JSON.stringify(_places);
+
+      var a = document.createElement("a");
+      var file = new Blob([placesJSON], {type: 'text/json'});
+      a.href = URL.createObjectURL(file);
+      a.download = 'test.json';
+      a.click();
+    },
+    ExportLeadsCSV: function() {
+      let _places = [];
+      for (let place of this.places) {
+        _places.push({
+          Address: place.address.display,
+          Contacts: JSON.stringify(this.FlattenObject(this.CopyCleanObject(place.contacts))),
+          Location: JSON.stringify(this.FlattenObject(this.CopyCleanObject(place.location))),
+          Name: place.name,
+          Phone_Number: place.phone_number,
+          Website: place.website
+        })
+      }
+
+      let csvData = Papa.unparse(_places);
+      this.JSONToCSVConvertor(csvData, 'Test');
+    },
+    JSONToCSVConvertor: function(csvData, title) {
+
+        var fileName = "Leads_";
+        
+        fileName += title.replace(/ /g,"_");   
+        
+        var uri = 'data:text/csv;charset=utf-8,' + escape(csvData);
+        
+        var link = document.createElement("a");    
+        link.href = uri;
+        
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    },
+    FlattenObject: function(obj) {
+      var toReturn = {};
+	
+      for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        
+        if ((typeof obj[i]) == 'object') {
+          var flatObject = this.FlattenObject(obj[i]);
+          for (var x in flatObject) {
+            if (!flatObject.hasOwnProperty(x)) continue;
+            
+            toReturn[i + '.' + x] = flatObject[x];
+          }
+        } else {
+          toReturn[i] = obj[i];
+        }
+      }
+      return toReturn;
+    },
+    CopyCleanObject: function(obj) {
+      let objCopy = {};
+      for (var property in obj) {
+        if (obj.hasOwnProperty(property)) {
+          if (obj[property] !== '' && obj[property] !== null) {
+            objCopy[property] = obj[property];
+          }
+        }
+      }
+      return objCopy;
     }
   }
 })

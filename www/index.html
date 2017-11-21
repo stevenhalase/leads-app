@@ -16,7 +16,7 @@
     <div class="uk-section" id="leadsApp">
 
       <div class="leads-nav--side-container uk-container">
-        <leads-nav-side></leads-nav-side>
+        <leads-nav-side v-on:exportleadsjson="ExportLeadsJSON" v-on:exportleadscsv="ExportLeadsCSV"></leads-nav-side>
       </div>
 
       <div class="leads-content-container uk-container">
@@ -44,6 +44,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.34/js/uikit-icons.min.js"></script>
     <script src="https://unpkg.com/vue"></script>
     <script src="/js/snazzy-info-window.min.js"></script>
+    <script src="/js/papaparse.min.js"></script>
     <script src="/js/main.js"></script>
   </body>
 </html>
