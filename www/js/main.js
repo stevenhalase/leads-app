@@ -1,13 +1,13 @@
 class APIService {
   constructor() {
-    this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
-    this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
-    this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
-    this.PiplEndpoint = 'http://localhost:3090/api/pipl';
-    // this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
-    // this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
-    // this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
-    // this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
+    // this.FullContactEndpoint = 'http://localhost:3090/api/fullcontact/domain';
+    // this.HunterEndpoint = 'http://localhost:3090/api/hunter/domain';
+    // this.AnyMailEndpoint = 'http://localhost:3090/api/anymail/domain';
+    // this.PiplEndpoint = 'http://localhost:3090/api/pipl';
+    this.FullContactEndpoint = 'https://leads-app-dev.herokuapp.com/api/fullcontact/domain';
+    this.HunterEndpoint = 'https://leads-app-dev.herokuapp.com/api/hunter/domain';
+    this.AnyMailEndpoint = 'https://leads-app-dev.herokuapp.com/api/anymail/domain';
+    this.PiplEndpoint = 'https://leads-app-dev.herokuapp.com/api/pipl';
   }
 
   GetFullContactDetails(businessURL) {
